@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Воспоминания</title>
+    <meta
+      name="description"
+      content="Личный архив воспоминаний: фотографии, истории и моменты, которые хочется хранить навсегда."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <canvas id="sunBackground" aria-hidden="true"></canvas>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">☁</div>
+          <div>
+            <p class="brand-label">Личный архив</p>
+            <h1>Воспоминания</h1>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="themeToggleButton" class="icon-toggle-button" type="button" aria-label="Сменить тему" title="Сменить тему">☀</button>
+          <button id="authButton" class="ghost-button auth-button" type="button">Войти</button>
+          <button id="uploadButton" class="primary-button" type="button">
+            + Добавить фото
+          </button>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" multiple hidden />
+      </header>
+
+      <div class="folder-toolbar">
+        <div id="folderList" class="folder-list" aria-label="Папки архива"></div>
+        <button id="addFolderButton" class="ghost-button small" type="button">+ Папка</button>
+      </div>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Светлые дни</p>
+            <h2>Осколки моментов, которые хочется держать рядом.</h2>
+            <p class="hero-text">
+              В этом архиве не всё — только те кадры, что возвращают тепло, воздух и
+              чувство дома. Каждый раз страница открывает новый набор светлых дней.
+            </p>
+          </div>
+
+          <aside id="featuredMemory" class="featured-memory" aria-live="polite"></aside>
+        </section>
+
+        <section class="gallery-wrap">
+          <div class="section-heading">
+            <span>Осколки светлых дней</span>
+          </div>
+          <div id="gallery" class="gallery" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="authModal" class="folder-modal hidden" aria-hidden="true">
+      <div class="folder-modal-backdrop" data-close-auth="true"></div>
+
+      <div class="folder-modal-card auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+        <button id="authModalCloseButton" class="close-button" type="button" aria-label="Закрыть окно входа">×</button>
+
+        <div class="folder-modal-content">
+          <p class="folder-modal-eyebrow">Аккаунт</p>
+          <h3 id="authModalTitle">Войти</h3>
+
+          <label class="field-group" for="authUsernameInput">
+            <span>Имя пользователя</span>
+            <input id="authUsernameInput" type="text" maxlength="40" placeholder="Например: Карина" />
+          </label>
+
+          <label class="field-group" for="authPasswordInput">
+            <span>Пароль</span>
+            <input id="authPasswordInput" type="password" maxlength="60" placeholder="Введите пароль" />
+          </label>
+
+          <p id="authMessage" class="auth-message" aria-live="polite"></p>
+
+          <div class="folder-modal-actions auth-actions">
+            <button id="authSubmitButton" class="primary-button small" type="button">Войти</button>
+            <button id="authLogoutButton" class="ghost-button small hidden" type="button">Выйти</button>
+            <button id="authToggleModeButton" class="text-button" type="button">Создать аккаунт</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="folderModal" class="folder-modal hidden" aria-hidden="true">
+      <div class="folder-modal-backdrop" data-close-folder="true"></div>
+
+      <div class="folder-modal-card" role="dialog" aria-modal="true" aria-labelledby="folderModalTitle">
+        <button id="folderModalCloseButton" class="close-button" type="button" aria-label="Закрыть окно папки">×</button>
+
+        <div class="folder-modal-content">
+          <p class="folder-modal-eyebrow">Новая папка</p>
+          <h3 id="folderModalTitle">Создать папку</h3>
+
+          <label class="field-group" for="folderNameInput">
+            <span>Название папки</span>
+            <input id="folderNameInput" type="text" maxlength="80" placeholder="Например: Путешествия" />
+          </label>
+
+          <div class="folder-customizer">
+            <div class="folder-preview-shell">
+              <img id="folderPreviewImage" src="" alt="Превью папки" />
+              <div id="folderPreviewFallback" class="folder-preview-fallback">+</div>
+            </div>
+
+            <div class="folder-controls">
+              <button id="folderSelectIconButton" class="ghost-button small" type="button">
+                Выбрать фото
+              </button>
+              <button id="folderClearIconButton" class="text-button" type="button">
+                Без иконки
+              </button>
+              <input id="folderIconInput" type="file" accept="image/*" hidden />
+              <p class="folder-hint">Если фото не выбрать, папка покажет последнюю добавленную в неё фотографию.</p>
+            </div>
+          </div>
+
+          <div class="folder-modal-actions">
+            <button id="folderCreateSubmit" class="primary-button small" type="button">
+              Создать папку
+            </button>
+            <button id="folderCreateCancel" class="ghost-button small" type="button">
+              Отмена
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="actionModal" class="folder-modal hidden" aria-hidden="true">
+      <div class="folder-modal-backdrop" data-close-action="true"></div>
+
+      <div class="folder-modal-card" role="dialog" aria-modal="true" aria-labelledby="actionModalTitle">
+        <button id="actionModalCloseButton" class="close-button" type="button" aria-label="Закрыть окно">×</button>
+
+        <div class="folder-modal-content">
+          <p id="actionModalEyebrow" class="folder-modal-eyebrow">Подтверждение</p>
+          <h3 id="actionModalTitle">Действие</h3>
+          <p id="actionModalMessage" class="action-modal-message"></p>
+
+          <label id="actionInputWrap" class="field-group hidden" for="actionInput">
+            <span>Новое название</span>
+            <input id="actionInput" type="text" maxlength="80" />
+          </label>
+
+          <div id="actionIconWrap" class="folder-customizer hidden">
+            <div class="folder-controls">
+              <button id="actionSelectIconButton" class="ghost-button small" type="button">
+                Выбрать фото
+              </button>
+              <button id="actionClearIconButton" class="text-button" type="button">
+                Без иконки
+              </button>
+              <input id="actionIconInput" type="file" accept="image/*" hidden />
+            </div>
+          </div>
+
+          <div class="folder-modal-actions">
+            <button id="actionConfirmButton" class="primary-button small" type="button">
+              Подтвердить
+            </button>
+            <button id="actionCancelButton" class="ghost-button small" type="button">
+              Отмена
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="memoryModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close="true"></div>
+
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button id="memoryModalCloseButton" class="close-button" type="button" aria-label="Закрыть">×</button>
+
+        <div class="modal-image-wrap">
+          <img id="modalImage" src="" alt="Фотография из архива" />
+        </div>
+
+        <div class="cloud-bubble">
+          <div class="cloud-header">
+            <p id="modalDate" class="modal-date"></p>
+            <p id="modalLocation" class="modal-location"></p>
+          </div>
+
+          <h3 id="modalTitle"></h3>
+
+          <div id="modalAuthor" class="memory-author">Добавил: неизвестно</div>
+
+          <div id="memoryReadOnly" class="memory-readonly"></div>
+
+          <div id="memoryEditor" class="memory-editor hidden">
+            <div class="field-group">
+              <label for="titleInput">Название</label>
+              <input id="titleInput" type="text" maxlength="120" placeholder="Название воспоминания" />
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label for="dateInput">Дата</label>
+                <input id="dateInput" type="date" />
+              </div>
+
+              <div class="field-group">
+                <label for="locationInput">Место</label>
+                <input id="locationInput" type="text" maxlength="140" placeholder="Где это было" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="folderSelect">Папка</label>
+              <select id="folderSelect">
+                <option value="">Без папки</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="memoryInput">Воспоминание</label>
+              <textarea id="memoryInput" rows="5" placeholder="Напишите воспоминание..."></textarea>
+            </div>
+
+            <div class="editor-actions">
+              <button id="saveMemoryButton" class="primary-button small" type="button">
+                Сохранить
+              </button>
+              <button id="cancelEditButton" class="ghost-button small" type="button">
+                Отмена
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button id="editMemoryButton" class="ghost-button" type="button">
+              Редактировать воспоминание
+            </button>
+            <button id="replaceImageButton" class="ghost-button" type="button">
+              Поменять фото
+            </button>
+            <button id="deleteMemoryButton" class="danger-button" type="button">
+              Удалить
+            </button>
+            <input id="replaceImageInput" type="file" accept="image/*" hidden />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
