@@ -15,19 +15,21 @@ A personal archive app for photos, stories, and folders with user accounts and s
 
 ## Deployment architecture
 
-- Frontend: Vercel
-- Backend: Render / Railway / any Python hosting service
-- Shared data: central JSON store or database served by the backend
+- Frontend and API: Vercel
+- Shared storage: Supabase Postgres
+- Local development: `server.py` and `data/memories.json`
 
 ## Required deployment config
 
-Set the frontend API URL before deploying:
+The frontend already uses the Vercel API route by default:
 
 ```js
-window.MEMORY_API_URL = 'https://your-backend-url/api/memories';
+window.MEMORY_API_URL = '/api/memories';
 ```
 
-Or keep the default local path for local testing and replace it in production.
+For Vercel, add `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `CORS_ORIGIN` in Project Settings -> Environment Variables. Never expose the service role key in frontend code.
+
+Run `supabase.sql` once in the Supabase SQL Editor before the first deployment.
 
 ## Shared auth and sync
 
@@ -36,4 +38,5 @@ Authentication is validated by the backend and stored in the shared archive payl
 ## Notes
 
 - The app blocks unauthenticated users from creating, editing, or deleting folders and memories.
-- The backend accepts writes only from a logged-in user session that exists in the shared user list.
+- The Vercel API stores the archive payload in Supabase so every device reads the same data.
+- The local Python server remains available for local testing only.
